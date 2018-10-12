@@ -65,7 +65,7 @@ app.post('/block', (req, res) => {
 app.post('/requestValidation', (req, res) => {
 
 	let response = new ValidationResponse(req.body.address);
-	res.send(JSON.parse(response));
+	res.send(response);
 })
 
 app.post('/message-signature/validate', (req, res) => {
