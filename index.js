@@ -13,6 +13,7 @@ const MessageSignature = require('./model/messageSignature.js')
 
 //global variables
 var validationStatus;
+var isValid = false;
 
 //middle-ware to be run before get/post methods
 app.use(bodyParser.json()); // support json encoded bodies
@@ -27,7 +28,9 @@ app.listen(8000, () => {
 //GET
 app.get('/', (req, res) => res.send('root'))
 
-app.get('/block', (req, res) => res.send('root/block'))
+app.get('/block', (req, res) => {
+	res.send("no op")
+})
 
 //using leveldb we print the block at the specified height to the browser
 app.get('/block/:blockHeight', (req, res) => {
@@ -48,7 +51,10 @@ app.post('/',(req, res) => {
 
 app.post('/block', (req, res) => {
 
-	var bodyData = req.body.body;
+	var bodyData = req.body;
+	bodyData["address"] = bodyData.address;
+	bodyData["star"] = JSON.parse(bodyData.star);
+
 	let chain = new Blockchain();
 
 	if (bodyData !== undefined && bodyData !== null && bodyData != "") {
@@ -93,7 +99,6 @@ app.post('/message-signature/validate', (req, res) => {
 	let address = req.body.address;
 	let signature = req.body.signature;
 	//Message for verification can be configured within the application logic from validation request.
-	let isValid = false;
 	if (validationStatus !== undefined && validationStatus !== null) {
 		isValid = bitcoinMessage.verify(validationStatus.message,address,signature);
 
