@@ -96,14 +96,16 @@ app.post('/message-signature/validate', (req, res) => {
 	let isValid = false;
 	if (validationStatus !== undefined && validationStatus !== null) {
 		isValid = bitcoinMessage.verify(validationStatus.message,address,signature);
-	}
 
-	if (isValid) {
-		validationStatus["messageSignature"] = "valid";
-		let messageSignature = new MessageSignature(validationStatus);
-		res.status(200).send(messageSignature);
+		if (isValid) {
+			validationStatus["messageSignature"] = "valid";
+			let messageSignature = new MessageSignature(validationStatus);
+			res.status(200).send(messageSignature);
+		} else {
+			validationStatus["messageSignature"] = "invalid";
+			res.status(417).send("fail");
+		}
 	} else {
-		validationStatus["messageSignature"] = "invalid";
 		res.status(417).send("fail");
 	}
 })
