@@ -4,7 +4,7 @@
 
 const SHA256 = require('crypto-js/sha256');
 const levelDatabase = require('./levelDatabase.js')
-const Block = require('./block.js')
+const Block = require('./model/block.js')
 
 /* ===== Blockchain Class ==========================
 |  Class with a constructor for new blockchain 		|

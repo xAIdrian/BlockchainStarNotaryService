@@ -7,8 +7,12 @@ const bitcoinMessage = require('bitcoinjs-message');
 const levelDatabase = require('./levelDatabase.js')
 const Blockchain = require('./simpleChain.js')
 
-const Block = require('./block.js')
-const ValidationResponse = require('./validationResponse.js')
+const Block = require('./model/block.js')
+const ValidationStatus = require('./model/validationStatus.js')
+const MessageSignature = require('./model/messageSignature.js')
+
+//global variables
+var validationStatus;
 
 //middle-ware to be run before get/post methods
 app.use(bodyParser.json()); // support json encoded bodies
@@ -62,14 +66,44 @@ app.post('/block', (req, res) => {
 	}	
 })
 
+/*This signature proves the users blockchain identity. Upon validation of this identity, the user should be granted access to register a single star.*/
 app.post('/requestValidation', (req, res) => {
 
-	let response = new ValidationResponse(req.body.address);
-	res.send(response);
+	//new session
+	if (validationStatus !== undefined || validationStatus !== null) {
+		
+		validationStatus = new ValidationStatus(req.body.address);
+		res.send(validationStatus);	
+
+	//expired session	
+	} else if (validationStatus !== undefined && validationStatus !== null
+		&& new Date().getTime() > validationStatus.validationWindow) {
+			
+		res.send("session expired. please create a new session and submit your wallet address again")
+
+	//existing session		
+	} else {
+		res.send(validationStatus);
+	}
 })
 
+/*After receiving the response, users will prove their blockchain identity by signing a message with their wallet. Once they sign this message, the application will validate their request and grant access to register a star.*/
 app.post('/message-signature/validate', (req, res) => {
 	//expecting payload with 1)wallet address and 2)message signature
+	let address = req.body.address;
+	let signature = req.body.signature;
 	//Message for verification can be configured within the application logic from validation request.
+	let isValid = false;
+	if (validationStatus !== undefined && validationStatus !== null) {
+		isValid = bitcoinMessage.verify(validationStatus.message,address,signature);
+	}
 
+	if (isValid) {
+		validationStatus["messageSignature"] = "valid";
+		let messageSignature = new MessageSignature(validationStatus);
+		res.status(200).send(messageSignature);
+	} else {
+		validationStatus["messageSignature"] = "invalid";
+		res.status(417).send("fail");
+	}
 })
