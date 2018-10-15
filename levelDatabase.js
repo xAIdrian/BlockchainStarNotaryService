@@ -55,6 +55,10 @@
             
             if (block.body.address !== undefined && block.body.address !== null) {
               console.log('address ' + block.body.address);
+
+              let decodedHexStory = new Buffer(block.body.star.story, 'hex').toString();
+              block.body.star["storyDecoded"] = decodedHexStory;
+
               blockArray.push(block);
             }
           }).on('error', function(err) {

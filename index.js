@@ -46,6 +46,9 @@ app.get('/block/:blockHeight', (req, res) => {
 
 //star lookup
 app.get('/stars/address:starAddress', (req, res) => {
+
+	//check for valid session
+
 	let starAddress = req.params.starAddress;
 	console.log('req param ' + starAddress);
 
@@ -73,14 +76,19 @@ app.post('/block', (req, res) => {
 
 	if (bodyData !== undefined && bodyData !== null && bodyData != "") {
 
-		let newBlock = new Block(bodyData);
-		chain.addBlockResponse(newBlock).then(function(result) {
-			var block = JSON.parse(result)
-			res.send(JSON.stringify(block))
-		}, function(error) {
-			res.send('addBlockResponse error')
-		})
+		if (bodyData.star.story.split(' ').length <= 250) {
+			let hexEncodedStory = new Buffer(bodyData.star.story).toString('hex');
+			bodyData.star.story = hexEncodedStory;
 
+			let newBlock = new Block(bodyData);
+
+			chain.addBlockResponse(newBlock).then(function(result) {
+				var block = JSON.parse(result)
+				res.send(JSON.stringify(block))
+			}, function(error) {
+				res.send('addBlockResponse error')
+			})
+		}
 	} else {
 		res.send('error : post body is not defined, is null, or is empty')
 	}	
