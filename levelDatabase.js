@@ -29,7 +29,6 @@
       let i = 0;
 
       return new Promise((resolve, reject) => {
-
         db.createReadStream()
           .on('data', function(data) {
             console.log("-> " + data.value)
@@ -41,6 +40,29 @@
             resolve(i);
           });
         })
+  }
+
+  const getBlockByAddress = function(address) {
+    let blockArray = new Array();
+
+    return new Promise((resolve, reject) => {
+      db.createReadStream()
+          .on('data', function(data) {
+            let block = JSON.parse(data.value);
+
+            console.log('block  '+ block);
+            console.log('body ' + JSON.stringify(block.body))
+            
+            if (block.body.address !== undefined && block.body.address !== null) {
+              console.log('address ' + block.body.address);
+              blockArray.push(block);
+            }
+          }).on('error', function(err) {
+            reject(err);
+          }).on('close', function() {
+            resolve(blockArray);
+          });
+    })
   }
 
   // Add data to levelDB with key/value pair
@@ -58,7 +80,8 @@
   module.exports = {
     getBlock : getBlock,
     getBlockHeight : getBlockHeight,
-    addDataToLevelDB : addDataToLevelDB
+    addDataToLevelDB : addDataToLevelDB,
+    getBlockByAddress : getBlockByAddress
   }
 
   /* ===== Testing ==============================================================|

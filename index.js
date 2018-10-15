@@ -44,16 +44,30 @@ app.get('/block/:blockHeight', (req, res) => {
 	})
 })
 
+//star lookup
+app.get('/stars/address:starAddress', (req, res) => {
+	let starAddress = req.params.starAddress;
+	console.log('req param ' + starAddress);
+
+	levelDatabase.getBlockByAddress(starAddress).then(function(result) {
+		res.send(result);
+	}, function(error) {
+		res.send('error : getting block at wallet address ' + starAddress + " => " + error);
+	})
+})
+
 //POST
 app.post('/',(req, res) => {
 	res.send('root post')
 })
 
+/* add a star to your blockchain's body */
 app.post('/block', (req, res) => {
 
 	var bodyData = req.body;
-	bodyData["address"] = bodyData.address;
-	bodyData["star"] = JSON.parse(bodyData.star);
+	console.log('zzzzzzzzzzzz bodyData ' + bodyData.address);
+	//bodyData["address"] = bodyData.address;
+	//bodyData["star"] = JSON.parse(bodyData.star);
 
 	let chain = new Blockchain();
 
