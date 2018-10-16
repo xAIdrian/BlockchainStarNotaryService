@@ -91,23 +91,24 @@ app.post('/block', (req, res) => {
 /*This signature proves the users blockchain identity. Upon validation of this identity, the user should be granted access to register a single star.*/
 app.post('/requestValidation', (req, res) => {
 
-	//existing session
+	//expired session
 	if (validationStatus !== undefined && validationStatus !== null) {
 
-		let predictedTime = validationStatus.requestTimeStamp + (5 * 60000)
-		let windowRemaining = predictedTime - new Date().getTime();
-
-		validationStatus.validationWindow = windowRemaining;
-		res.send(validationStatus);	
-
-	//expired session	
-	} else if (validationStatus !== undefined && validationStatus !== null
-		&& new Date().getTime() > validationStatus.validationWindow) {
-			
+		//expired session
+		if (validationStatus.validationWindow < 0) {
 			validationStatus = null;
-			res.send("session expired. please create a new session and submit your wallet address again")
+			res.send("Session Expired. Please resend request.")
+		} else {
+			//valid session
+			let predictedTime = validationStatus.requestTimeStamp + (5 * 60000)
+			let windowRemaining = predictedTime - new Date().getTime();
 
-	//existing session		
+			validationStatus.validationWindow = windowRemaining;
+			delete validationStatus.messageSignature
+
+			res.send(validationStatus);		
+		}
+	//new session		
 	} else {
 		validationStatus = new ValidationStatus(req.body.address);
 		res.send(validationStatus);
@@ -121,7 +122,7 @@ app.post('/message-signature/validate', (req, res) => {
 	let signature = req.body.signature;
 	//Message for verification can be configured within the application logic from validation request.
 	if (validationStatus !== undefined && validationStatus !== null) {
-		isValid = bitcoinMessage.verify(validationStatus.message,address,signature);
+		isValid = bitcoinMessage.verify(validationStatus.message, address, signature);
 
 		if (isValid) {
 			validationStatus["messageSignature"] = "valid";
