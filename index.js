@@ -47,10 +47,7 @@ app.get('/block/:blockHeight', (req, res) => {
 //star lookup
 app.get('/stars/address:starAddress', (req, res) => {
 
-	//check for valid session
-
 	let starAddress = req.params.starAddress;
-	console.log('req param ' + starAddress);
 
 	levelDatabase.getBlockByAddress(starAddress).then(function(result) {
 		res.send(result);
@@ -68,13 +65,10 @@ app.post('/',(req, res) => {
 app.post('/block', (req, res) => {
 
 	var bodyData = req.body;
-	console.log('zzzzzzzzzzzz bodyData ' + bodyData.address);
-	//bodyData["address"] = bodyData.address;
-	//bodyData["star"] = JSON.parse(bodyData.star);
 
 	let chain = new Blockchain();
 
-	if (bodyData !== undefined && bodyData !== null && bodyData != "") {
+	if (bodyData !== undefined && bodyData !== null && bodyData !== "") {
 
 		if (bodyData.star.story.split(' ').length <= 250) {
 			let hexEncodedStory = new Buffer(bodyData.star.story).toString('hex');
@@ -97,20 +91,25 @@ app.post('/block', (req, res) => {
 /*This signature proves the users blockchain identity. Upon validation of this identity, the user should be granted access to register a single star.*/
 app.post('/requestValidation', (req, res) => {
 
-	//new session
-	if (validationStatus !== undefined || validationStatus !== null) {
-		
-		validationStatus = new ValidationStatus(req.body.address);
+	//existing session
+	if (validationStatus !== undefined && validationStatus !== null) {
+
+		let predictedTime = validationStatus.requestTimeStamp + (5 * 60000)
+		let windowRemaining = predictedTime - new Date().getTime();
+
+		validationStatus.validationWindow = windowRemaining;
 		res.send(validationStatus);	
 
 	//expired session	
 	} else if (validationStatus !== undefined && validationStatus !== null
 		&& new Date().getTime() > validationStatus.validationWindow) {
 			
-		res.send("session expired. please create a new session and submit your wallet address again")
+			validationStatus = null;
+			res.send("session expired. please create a new session and submit your wallet address again")
 
 	//existing session		
 	} else {
+		validationStatus = new ValidationStatus(req.body.address);
 		res.send(validationStatus);
 	}
 })

@@ -49,17 +49,42 @@
       db.createReadStream()
           .on('data', function(data) {
             let block = JSON.parse(data.value);
-
-            console.log('block  '+ block);
-            console.log('body ' + JSON.stringify(block.body))
+            let bAddress = block.body.address;
             
-            if (block.body.address !== undefined && block.body.address !== null) {
-              console.log('address ' + block.body.address);
+            if (bAddress !== undefined && bAddress !== null) {
 
-              let decodedHexStory = new Buffer(block.body.star.story, 'hex').toString();
-              block.body.star["storyDecoded"] = decodedHexStory;
+              if (bAddress) {
+                let decodedHexStory = new Buffer(block.body.star.story, 'hex').toString();
+                block.body.star["storyDecoded"] = decodedHexStory;
 
-              blockArray.push(block);
+                blockArray.push(block);
+              }
+            }
+          }).on('error', function(err) {
+            reject(err);
+          }).on('close', function() {
+            resolve(blockArray);
+          });
+    })
+  }
+
+  const getBlockByHash = function(hash) {
+    let blockArray = new Array();
+
+    return new Promise((resolve, reject) => {
+      db.createReadStream()
+          .on('data', function(data) {
+            let block = JSON.parse(data.value);
+            let bHash = block.hash;
+            
+            if (bHash !== undefined && bHash !== null) {
+
+              if (bHash) {
+                let decodedHexStory = new Buffer(block.body.star.story, 'hex').toString();
+                block.body.star["storyDecoded"] = decodedHexStory;
+
+                blockArray.push(block);
+              }
             }
           }).on('error', function(err) {
             reject(err);
