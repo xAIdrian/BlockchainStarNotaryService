@@ -14,6 +14,7 @@ const MessageSignature = require('./model/messageSignature.js')
 //global variables
 var validationStatus;
 var isValid = false;
+var starRegisterCount = 0;
 
 //middle-ware to be run before get/post methods
 app.use(bodyParser.json()); // support json encoded bodies
@@ -38,7 +39,7 @@ app.get('/block/:blockHeight', (req, res) => {
 
 	levelDatabase.getBlock(params.blockHeight).then(function(result) {
 		var block = JSON.parse(result)
-		res.send(JSON.stringify(block))
+		res.send(block)
 	}, function(error) {
 		res.send('error : getting block at height ' + req.params.blockHeight)
 	})
@@ -56,6 +57,17 @@ app.get('/stars/address:starAddress', (req, res) => {
 	})
 })
 
+app.get('/stars/hash:starHash', (req, res) => {
+
+	let starHash = req.params.starHash;
+
+	levelDatabase.getBlockByHash(starHash).then(function(result) {
+		res.send(result)
+	}, function(error) {
+		res.send('error : getting block at hash ' + starHash + " => " + error);
+	})
+})
+
 //POST
 app.post('/',(req, res) => {
 	res.send('root post')
@@ -64,28 +76,38 @@ app.post('/',(req, res) => {
 /* add a star to your blockchain's body */
 app.post('/block', (req, res) => {
 
-	var bodyData = req.body;
+	if(isValid && starRegisterCount == 0) {
+		var bodyData = req.body;
 
-	let chain = new Blockchain();
+		let chain = new Blockchain();
 
-	if (bodyData !== undefined && bodyData !== null && bodyData !== "") {
+		if (bodyData !== undefined && bodyData !== null && bodyData !== "") {
 
-		if (bodyData.star.story.split(' ').length <= 250) {
-			let hexEncodedStory = new Buffer(bodyData.star.story).toString('hex');
-			bodyData.star.story = hexEncodedStory;
+			let validProperties = bodyData.star.dec && bodyData.star.ra && bodyData.star.story;
 
-			let newBlock = new Block(bodyData);
+			if (validProperties && bodyData.star.story.split(' ').length <= 250) {
+				let hexEncodedStory = new Buffer(bodyData.star.story).toString('hex');
+				bodyData.star.story = hexEncodedStory;
 
-			chain.addBlockResponse(newBlock).then(function(result) {
-				var block = JSON.parse(result)
-				res.send(JSON.stringify(block))
-			}, function(error) {
-				res.send('addBlockResponse error')
-			})
-		}
+				let newBlock = new Block(bodyData);
+
+				chain.addBlockResponse(newBlock).then(function(result) {
+					starRegisterCount++;
+
+					var block = JSON.parse(result)
+					res.send(block)
+				}, function(error) {
+					res.send('addBlockResponse error')
+				})
+			} else {
+				res.send('Star parameters invalid');
+			}
+		} else {
+			res.send('error : post body is not defined, is null, or is empty')
+		}	
 	} else {
-		res.send('error : post body is not defined, is null, or is empty')
-	}	
+		res.send("Session Invalid. Please revalidate.")
+	}
 })
 
 /*This signature proves the users blockchain identity. Upon validation of this identity, the user should be granted access to register a single star.*/
@@ -94,23 +116,32 @@ app.post('/requestValidation', (req, res) => {
 	//expired session
 	if (validationStatus !== undefined && validationStatus !== null) {
 
+		//update validationWindow
+		let predictedTime = validationStatus.requestTimeStamp + (5 * 60000);
+		let windowRemaining = predictedTime - new Date().getTime();
+		validationStatus.validationWindow = Math.round(windowRemaining / 1000);
+
+		console.log(validationStatus.validationWindow);
+		console.log(validationStatus.validationWindow < 0);
+
 		//expired session
-		if (validationStatus.validationWindow < 0) {
+		if (parseInt(validationStatus.validationWindow,10) < parseInt(0, 10)) {
+			
 			validationStatus = null;
+			isValid = null;
 			res.send("Session Expired. Please resend request.")
 		} else {
 			//valid session
-			let predictedTime = validationStatus.requestTimeStamp + (5 * 60000)
-			let windowRemaining = predictedTime - new Date().getTime();
-
-			validationStatus.validationWindow = windowRemaining;
 			delete validationStatus.messageSignature
-
 			res.send(validationStatus);		
 		}
+
 	//new session		
 	} else {
 		validationStatus = new ValidationStatus(req.body.address);
+		let window = validationStatus.validationWindow;
+		validationStatus.validationWindow = window / 1000;
+
 		res.send(validationStatus);
 	}
 })
@@ -130,9 +161,9 @@ app.post('/message-signature/validate', (req, res) => {
 			res.status(200).send(messageSignature);
 		} else {
 			validationStatus["messageSignature"] = "invalid";
-			res.status(417).send("fail");
+			res.status(417).send("Session Invalid");
 		}
 	} else {
-		res.status(417).send("fail");
+		res.send("Session Expired. Please resend request.")
 	}
 })

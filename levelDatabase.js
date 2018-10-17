@@ -53,7 +53,7 @@
             
             if (bAddress !== undefined && bAddress !== null) {
 
-              if (bAddress) {
+              if (address == bAddress) {
                 let decodedHexStory = new Buffer(block.body.star.story, 'hex').toString();
                 block.body.star["storyDecoded"] = decodedHexStory;
 
@@ -69,7 +69,6 @@
   }
 
   const getBlockByHash = function(hash) {
-    let blockArray = new Array();
 
     return new Promise((resolve, reject) => {
       db.createReadStream()
@@ -79,11 +78,11 @@
             
             if (bHash !== undefined && bHash !== null) {
 
-              if (bHash) {
+              if (hash == bHash) {
                 let decodedHexStory = new Buffer(block.body.star.story, 'hex').toString();
                 block.body.star["storyDecoded"] = decodedHexStory;
 
-                blockArray.push(block);
+                resolve(block)
               }
             }
           }).on('error', function(err) {
