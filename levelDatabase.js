@@ -109,7 +109,8 @@
     getBlock : getBlock,
     getBlockHeight : getBlockHeight,
     addDataToLevelDB : addDataToLevelDB,
-    getBlockByAddress : getBlockByAddress
+    getBlockByAddress : getBlockByAddress,
+    getBlockByHash : getBlockByHash
   }
 
   /* ===== Testing ==============================================================|
