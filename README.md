@@ -1,4 +1,4 @@
-# BlockchainWebService
+<img width="1200" alt="half_size_asbanner_2x_v2test4" src="https://user-images.githubusercontent.com/39571240/47747419-90809480-dc45-11e8-8c3a-9a58d3f204eb.png">
 
 Web API with node and express used to access a private blockchain. Get and Add blocks to the chain.
 
