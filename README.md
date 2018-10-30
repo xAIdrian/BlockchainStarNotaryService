@@ -3,6 +3,7 @@
 Web API with node and express used to access a private blockchain. Get and Add blocks to the chain.
 
 ### Table of Contents:
+* [Prerequisites](#preq)
 * [Getting Started](#getting_started)
 * [Running the Application](#run)
 * [Configure Star Registration Endpoint](#star_registration)
@@ -10,7 +11,7 @@ Web API with node and express used to access a private blockchain. Get and Add b
 * [Search by Star Block Hash](#search_hash)
 * [Search by Star Block Height](#search_height)
 
-### <a name="getting_started"></a>Prerequisites
+### <a name="preq"></a>Prerequisites
 
 If things are acting funky then you need to install the dependencies using NPM
 
