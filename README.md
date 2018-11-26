@@ -1,14 +1,17 @@
-# BlockchainWebService
+<img width="1200" alt="half_size_asbanner_2x_v2test4" src="https://user-images.githubusercontent.com/39571240/47747419-90809480-dc45-11e8-8c3a-9a58d3f204eb.png">
 
-Web API with node and express used to access a private blockchain. Get and Add blocks to the chain.
+Web API with node and express used to access a private blockchain.
 
-## Getting Started
+### Table of Contents:
+* [Prerequisites](#preq)
+* [Getting Started](#getting_started)
+* [Running the Application](#run)
+* [Configure Star Registration Endpoint](#star_registration)
+* [Search by Blockchain Wallet Address](#search_address)
+* [Search by Star Block Hash](#search_hash)
+* [Search by Star Block Height](#search_height)
 
-- Download git repo
-- Run node application
-- Interact with in browser
-
-### Prerequisites
+### <a name="preq"></a>Prerequisites
 
 If things are acting funky then you need to install the dependencies using NPM
 
@@ -20,7 +23,13 @@ npm install crypto-js --save
 npm install express --save
 ```
 
-## Running the tests
+### <a name="getting_started"></a>Getting Started
+
+- Download git repo
+- Run node application
+- Interact with in browser
+
+## <a name="run"></a>Running the Application
 
 In your terminal run the application once you have navigated to the proper package :
 ````
@@ -48,7 +57,7 @@ For both requests, the block will be displayed to the browser window in JSON for
 "{\"hash\":\"d0bf72ce71844ac65aa37849118e81581499b5e3922f6eda1ca0b491a54b1dbd\",\"height\":1,\"body\":\"boss data\",\"time\":\"1537838613\",\"previousBlockHash\":\"b911e16c74f6fb8a63415e4ac98abbc1d26c63438a04148bf5c7775942cd1764\"}"
 ````
 
-### Configure Star Registration Endpoint
+### <a name="star_registration"></a>Configure Star Registration Endpoint
 
 URL
 This functionality should be provided at the following URL.
@@ -108,7 +117,7 @@ JSON Response Example
 }
 ````
 
-### Search by Blockchain Wallet Address
+### <a name="search_address"></a>Search by Blockchain Wallet Address
 Details
 > Get endpoint with URL parameter for wallet address
 > JSON Response
@@ -162,7 +171,7 @@ Example: JSON response
   }
 ]
 ````
-### Search by Star Block Hash
+### <a name="search_hash"></a>Search by Star Block Hash
 Get endpoint with URL parameter for star block hash JSON Response
 
 > Star block object
@@ -198,7 +207,7 @@ Example: JSON response
 }
 ````
 
-### Search by Star Block Height
+### <a name="search_height"></a>Search by Star Block Height
 
 Details
 > Get endpoint with URL parameter for star block height
@@ -237,7 +246,7 @@ Example: JSON response
 ````
 
 
-## Authors
+## Author
 
 * **Adrian Mohnacs** - *all da work* - [github](https://github.com/amohnacs15)
 
