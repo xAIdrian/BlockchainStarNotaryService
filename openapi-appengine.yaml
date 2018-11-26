@@ -1,0 +1,46 @@
+ swagger: "2.0"
+    info:
+      title: "BlockChain Star Notary Service"
+      description: "A Star Registry service that allows users to claim ownership of their favorite star in the night sky."
+      version: "1.0.0"
+    # This field will be replaced by the deploy_api.sh script.
+    host: "blockchain-star-notary.appspot.com"
+    schemes:
+      - "https"
+    paths:
+      "/block":
+        get:
+          description: "No operation but it makes for a good sanity check when testing connection."
+          operationId: "block"
+          produces: 
+            - "charset=utf-8"
+          responses:
+            200:
+              description: "Success."
+              schema:
+                type: string
+            400:
+              description: "The IATA code is invalid or missing."
+      "block/{blockHeight}":
+        get:
+          description: "Using LevelDB, we get the block at the specified height and display"
+          operationId: "blockGetBlockHeight"
+          produces:
+            - "charset=utf-8"
+          parameters:
+            - 
+              description: "BlockChain Height"
+              in: path
+              name: blockHeight
+              required: true  
+              schema:
+                type: integer
+          responses:
+            200:
+              description: "Success."
+              schema:
+                type: string
+            400:      
+              description: "Error getting block height"
+
+
