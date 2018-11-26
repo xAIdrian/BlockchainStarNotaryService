@@ -146,7 +146,9 @@ app.post('/requestValidation', (req, res) => {
 	}
 })
 
-/*After receiving the response, users will prove their blockchain identity by signing a message with their wallet. Once they sign this message, the application will validate their request and grant access to register a star.*/
+/*After receiving the response, users will prove their blockchain identity by signing a message with 
+their wallet. Once they sign this message, the application will validate their request and grant 
+access to register a star.*/
 app.post('/message-signature/validate', (req, res) => {
 	//expecting payload with 1)wallet address and 2)message signature
 	let address = req.body.address;

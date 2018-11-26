@@ -127,5 +127,45 @@
                 type: string
             400:            
               description: "Add star to block error"            
+      "/requesetValidation":
+        post:
+          description: "Request validation for your current wallet address to create stars"
+          operationId: "requestValidation"
+          produces:
+            - "application/json"
+          responses:
+            200:
+              description: "Success."
+              schema:
+                type: string
+            400:
+              description: "Session expired or invalid address"  
+      "/message-signature/validate":
+        post:  
+          description: "After receiving a validation response, users will prove their blockchain identity by signing a message with their wallet. Once they sign this message, the application will validate their request and grant access to register a star."
+          operationId: "messageSignatureValidate"
+          produces:
+            - "application/json"
+          parameters:
+            -
+              description: "Payload with wallet address and validated message signature"
+              in: body
+              name: payload
+              schema: 
+                required:
+                  - address
+                  - signature
+                  properties:
+                    address:
+                      type: string
+                    signature:
+                      type: string
+          responses:
+            200:
+              description: "Success."
+              schema:
+                type: string
+            400:            
+              description: "Session expired or invalid payload"            
 
 
