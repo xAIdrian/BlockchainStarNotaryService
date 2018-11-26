@@ -53,11 +53,11 @@ app.get('/stars/address::starAddress', (req, res) => {
 	levelDatabase.getBlockByAddress(starAddress).then(function(result) {
 		res.send(result);
 	}, function(error) {
-		res.send('error : getting block at wallet address ' + starAddress + " => " + error);
+		res.send('error : getting star at address ' + starAddress + " => " + error);
 	})
 })
 
-app.get('/stars/hash:::starHash', (req, res) => {
+app.get('/stars/hash::starHash', (req, res) => {
 
 	let starHash = req.params.starHash;
 

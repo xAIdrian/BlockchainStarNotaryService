@@ -11,30 +11,29 @@
       "/block":
         get:
           description: "No operation but it makes for a good sanity check when testing connection."
-          operationId: "block"
+          operationId: "getBlock"
           produces: 
-            - "charset=utf-8"
+            - "application/json"
           responses:
             200:
               description: "Success."
               schema:
                 type: string
             400:
-              description: "The IATA code is invalid or missing."
-      "block/{blockHeight}":
+              description: "Generic Error"
+      "/block/{blockHeight}":
         get:
           description: "Using LevelDB, we get the block at the specified height and display"
           operationId: "blockGetBlockHeight"
           produces:
-            - "charset=utf-8"
+            - "application/json"
           parameters:
             - 
-              description: "BlockChain Height"
+              description: "BlockChain height"
               in: path
               name: blockHeight
               required: true  
-              schema:
-                type: integer
+              type: integer
           responses:
             200:
               description: "Success."
@@ -42,5 +41,91 @@
                 type: string
             400:      
               description: "Error getting block height"
+      "/stars/address:{starAddress}":
+        get:
+          description: "Look up a star using its address on the blockchain"        
+          operationId: "starsAddressStarAddress"
+          produces:
+            - "application/json"
+          parameters:
+            -
+              description: "Hex encoded address"
+              in: path
+              name: starAddress
+              required: true
+              type: string
+          respones:
+            200:
+              description: "Success."
+              schema:
+                type: string
+            400:      
+              description: "Error getting star at address"
+      "/stars/hash:{starHash}":
+        get:
+          description: "Look up a star using its hashed value on the blockchain"
+          operationId: "starsHashStarHash"
+          produces:
+            - "application/json"
+          parameters:
+            -
+              description: "256 bit encoded hash of our star when it was added to the blockchain"
+              in: path
+              name: starHash
+              required: true
+              type: string
+          responses:
+            200:
+              description: "Success."
+              schema:
+                type: string
+            400:            
+              description: "Error getting star at hash"
+      "/":
+        post:
+          description: "No operation but it makes for a good sanity check when testing connection."
+          operationId: "emptyPost"
+          produces: 
+            - "application/json"
+          responses:
+            200:
+              description: "Success."
+              schema:
+                type: string
+            400:
+              description: "Generic Error"  
+      "/block"
+        post:
+          description: "Add a star to the blockchain!"
+          operationId: "postBlock" 
+          produces:
+            - "application/json"
+          parameters:
+            -
+              description: "Our star!"
+              in: body
+              name: star
+              schema:
+                required:
+                  - address
+                properties:
+                  address:
+                    type: string
+                  star:
+                    type: Object
+                    properties:
+                      dec:
+                        type: string
+                      ra:
+                        type: string
+                      story:        
+                        type: string
+          responses:
+            200:
+              description: "Success."
+              schema:
+                type: string
+            400:            
+              description: "Add star to block error"            
 
 
