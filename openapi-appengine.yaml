@@ -1,171 +1,144 @@
- swagger: "2.0"
-    info:
-      title: "BlockChain Star Notary Service"
-      description: "A Star Registry service that allows users to claim ownership of their favorite star in the night sky."
-      version: "1.0.0"
-    # This field will be replaced by the deploy_api.sh script.
-    host: "blockchain-star-notary.appspot.com"
-    schemes:
-      - "https"
-    paths:
-      "/block":
-        get:
-          description: "No operation but it makes for a good sanity check when testing connection."
-          operationId: "getBlock"
-          produces: 
-            - "application/json"
-          responses:
-            200:
-              description: "Success."
-              schema:
+# [START swagger]
+swagger: "2.0"
+info:
+  title: "BlockChain Star Notary Service"
+  description: "A Star Registry service that allows users to claim ownership of their favorite star in the night sky."
+  version: "1.0.0"
+host: "blockchain-star-notary.appspot.com"
+schemes:
+  - "https"
+paths:
+  "/block/{blockHeight}":
+    get:
+      description: "Using LevelDB, we get the block at the specified height and display"
+      operationId: "blockGetBlockHeight"
+      produces:
+        - "application/json"
+      parameters:
+        - 
+          description: "BlockChain height"
+          in: path
+          name: blockHeight
+          required: true  
+          type: integer
+      responses:
+        200:
+          description: "Success."
+          schema:
+            type: string
+        400:      
+          description: "Error getting block height"
+  "/stars/address:{starAddress}":
+    get:
+      description: "Look up a star using its address on the blockchain"        
+      operationId: "starsAddressStarAddress"
+      produces:
+        - "application/json"
+      parameters:
+        -
+          description: "Hex encoded address"
+          in: path
+          name: starAddress
+          required: true
+          type: string
+      respones:
+        200:
+          description: "Success."
+          schema:
+            type: string
+        400:      
+          description: "Error getting star at address"
+  "/stars/hash:{starHash}":
+    get:
+      description: "Look up a star using its hashed value on the blockchain"
+      operationId: "starsHashStarHash"
+      produces:
+        - "application/json"
+      parameters:
+        -
+          description: "256 bit encoded hash of our star when it was added to the blockchain"
+          in: path
+          name: starHash
+          required: true
+          type: string
+      responses:
+        200:
+          description: "Success."
+          schema:
+            type: string
+        400:            
+          description: "Error getting star at hash"
+  #our POSTS begin         
+  "/block":
+    post:
+      description: "Add a star to the blockchain!"
+      operationId: "postBlock" 
+      produces:
+        - "application/json"
+      parameters:
+        -
+          description: "Our star!"
+          in: body
+          name: star
+          schema:
+            $ref: "#/definitions/Star"
+      responses:
+        200:
+          description: "Success."
+          schema:
+            type: string
+        400:            
+          description: "Add star to block error"            
+  "/requesetValidation":
+    post:
+      description: "Request validation for your current wallet address to create stars"
+      operationId: "requestValidation"
+      produces:
+        - "application/json"
+      responses:
+        200:
+          description: "Success."
+          schema:
+            type: string
+        400:
+          description: "Session expired or invalid address"  
+  "/message-signature/validate":
+    post:  
+      description: "After receiving a validation response, users will prove their blockchain identity by signing a message with their wallet. Once they sign this message, the application will validate their request and grant access to register a star."
+      operationId: "messageSignatureValidate"
+      produces:
+        - "application/json"
+      parameters:
+        -
+          description: "Payload with wallet address and validated message signature"
+          in: body
+          name: payload
+          schema: 
+            required:
+              - address
+              - signature
+            properties:
+              address:
                 type: string
-            400:
-              description: "Generic Error"
-      "/block/{blockHeight}":
-        get:
-          description: "Using LevelDB, we get the block at the specified height and display"
-          operationId: "blockGetBlockHeight"
-          produces:
-            - "application/json"
-          parameters:
-            - 
-              description: "BlockChain height"
-              in: path
-              name: blockHeight
-              required: true  
-              type: integer
-          responses:
-            200:
-              description: "Success."
-              schema:
+              signature:
                 type: string
-            400:      
-              description: "Error getting block height"
-      "/stars/address:{starAddress}":
-        get:
-          description: "Look up a star using its address on the blockchain"        
-          operationId: "starsAddressStarAddress"
-          produces:
-            - "application/json"
-          parameters:
-            -
-              description: "Hex encoded address"
-              in: path
-              name: starAddress
-              required: true
-              type: string
-          respones:
-            200:
-              description: "Success."
-              schema:
-                type: string
-            400:      
-              description: "Error getting star at address"
-      "/stars/hash:{starHash}":
-        get:
-          description: "Look up a star using its hashed value on the blockchain"
-          operationId: "starsHashStarHash"
-          produces:
-            - "application/json"
-          parameters:
-            -
-              description: "256 bit encoded hash of our star when it was added to the blockchain"
-              in: path
-              name: starHash
-              required: true
-              type: string
-          responses:
-            200:
-              description: "Success."
-              schema:
-                type: string
-            400:            
-              description: "Error getting star at hash"
-      "/":
-        post:
-          description: "No operation but it makes for a good sanity check when testing connection."
-          operationId: "emptyPost"
-          produces: 
-            - "application/json"
-          responses:
-            200:
-              description: "Success."
-              schema:
-                type: string
-            400:
-              description: "Generic Error"  
-      "/block"
-        post:
-          description: "Add a star to the blockchain!"
-          operationId: "postBlock" 
-          produces:
-            - "application/json"
-          parameters:
-            -
-              description: "Our star!"
-              in: body
-              name: star
-              schema:
-                required:
-                  - address
-                properties:
-                  address:
-                    type: string
-                  star:
-                    type: Object
-                    properties:
-                      dec:
-                        type: string
-                      ra:
-                        type: string
-                      story:        
-                        type: string
-          responses:
-            200:
-              description: "Success."
-              schema:
-                type: string
-            400:            
-              description: "Add star to block error"            
-      "/requesetValidation":
-        post:
-          description: "Request validation for your current wallet address to create stars"
-          operationId: "requestValidation"
-          produces:
-            - "application/json"
-          responses:
-            200:
-              description: "Success."
-              schema:
-                type: string
-            400:
-              description: "Session expired or invalid address"  
-      "/message-signature/validate":
-        post:  
-          description: "After receiving a validation response, users will prove their blockchain identity by signing a message with their wallet. Once they sign this message, the application will validate their request and grant access to register a star."
-          operationId: "messageSignatureValidate"
-          produces:
-            - "application/json"
-          parameters:
-            -
-              description: "Payload with wallet address and validated message signature"
-              in: body
-              name: payload
-              schema: 
-                required:
-                  - address
-                  - signature
-                  properties:
-                    address:
-                      type: string
-                    signature:
-                      type: string
-          responses:
-            200:
-              description: "Success."
-              schema:
-                type: string
-            400:            
-              description: "Session expired or invalid payload"            
+      responses:
+        200:
+          description: "Success."
+          schema:
+            type: string
+        400:            
+          description: "Session expired or invalid payload" 
+definitions:
+  Star:
+    type: object
+    properties:
+      dec:
+        type: string
+      ra:
+        type: string
+      story:        
+        type: string
+
 
 
