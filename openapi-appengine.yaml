@@ -41,7 +41,7 @@ paths:
           name: starAddress
           required: true
           type: string
-      respones:
+      responses:
         200:
           description: "Success."
           schema:
