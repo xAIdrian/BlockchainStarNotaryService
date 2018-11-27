@@ -28,7 +28,7 @@ paths:
             type: string
         400:      
           description: "Error getting block height"
-  "/stars/address:{starAddress}":
+  "/stars/address/{starAddress}":
     get:
       description: "Look up a star using its address on the blockchain"        
       operationId: "starsAddressStarAddress"
@@ -48,7 +48,7 @@ paths:
             type: string
         400:      
           description: "Error getting star at address"
-  "/stars/hash:{starHash}":
+  "/stars/hash/{starHash}":
     get:
       description: "Look up a star using its hashed value on the blockchain"
       operationId: "starsHashStarHash"

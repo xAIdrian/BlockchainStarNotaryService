@@ -46,7 +46,7 @@ app.get('/block/:blockHeight', (req, res) => {
 })
 
 //star lookup
-app.get('/stars/address::starAddress', (req, res) => {
+app.get('/stars/address/:starAddress', (req, res) => {
 
 	let starAddress = req.params.starAddress;
 
@@ -57,7 +57,7 @@ app.get('/stars/address::starAddress', (req, res) => {
 	})
 })
 
-app.get('/stars/hash::starHash', (req, res) => {
+app.get('/stars/hash/:starHash', (req, res) => {
 
 	let starHash = req.params.starHash;
 
