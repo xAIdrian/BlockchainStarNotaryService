@@ -6,6 +6,8 @@ Web API with node and express used to access a private blockchain.
 * [Prerequisites](#preq)
 * [Getting Started](#getting_started)
 * [Running the Application](#run)
+* [Validate Your Wallet Address and Generate Signature](#validate)
+* [Validate Message Signature](#message)   
 * [Configure Star Registration Endpoint](#star_registration)
 * [Search by Blockchain Wallet Address](#search_address)
 * [Search by Star Block Hash](#search_hash)
@@ -56,6 +58,63 @@ For both requests, the block will be displayed to the browser window in JSON for
 ````
 "{\"hash\":\"d0bf72ce71844ac65aa37849118e81581499b5e3922f6eda1ca0b491a54b1dbd\",\"height\":1,\"body\":\"boss data\",\"time\":\"1537838613\",\"previousBlockHash\":\"b911e16c74f6fb8a63415e4ac98abbc1d26c63438a04148bf5c7775942cd1764\"}"
 ````
+
+### <a name="validate"></a>Validate Your Wallet Address and Generate Signature
+
+Start out by submitting a validation request to an API endpoint:
+````
+curl -X POST \
+  http://localhost:8000/requestValidation \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+    "address":"19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL"
+}'
+````
+Json Response Example:
+````
+{
+    "walletAddress": "19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL",
+    "requestTimeStamp": "1541605128",
+    "message": "19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL:1541605128:starRegistry",
+    "validationWindow": 300
+}
+````
+
+Generate the signature to be used in the following curl command by opening up the wallet you've been using on the testnet.
+In my case I used `Electrum`.  Go through the process to sign your message with your 256 bit hash:
+![screen shot 2018-11-27 at 10 02 14 pm](https://user-images.githubusercontent.com/7444521/49132723-431e3400-f292-11e8-9fb3-c23d2a9771e3.png)
+
+
+### <a name="message"></a>Validate Message Signature
+
+Send a validation request:
+````
+curl -X POST \
+  http://localhost:8000/message-signature/validate \
+  -H 'Content-Type: application/json' \
+  -H 'cache-control: no-cache' \
+  -d '{
+"address":"19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL",
+ "signature":"H8K4+1MvyJo9tcr2YN2KejwvX1oqneyCH+fsUL1z1WBdWmswB9bijeFfOfMqK68kQ5RO6ZxhomoXQG3fkLaBl+Q="
+}'
+````
+
+And you should expect a JSON response similar to this one
+````
+{
+    "registerStar": true,
+    "status": {
+        "address": "19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL",
+        "requestTimeStamp": "1541605128",
+        "message": "19xaiMqayaNrn3x7AjV5cU4Mk5f5prRVpL:1541605128:starRegistry",
+        "validationWindow": 200,
+        "messageSignature": true
+    }
+}
+````
+
+
 
 ### <a name="star_registration"></a>Configure Star Registration Endpoint
 
